@@ -1,0 +1,47 @@
+{
+  "name": "mcp-interactive",
+  "version": "0.0.3",
+  "description": "MCP Interactive server for LLM --> user communication",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "mcp-interactive": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node index.js",
+    "prepublishOnly": "npm test"
+  },
+  "files": [
+    "index.js",
+    "initial_tools.js",
+    "electron-main.cjs",
+    "dialog.html",
+    "marked.min.js",
+    "README.md"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "electron": "^27.3.11",
+    "highlight.js": "^11.11.1",
+    "marked": "^15.0.12",
+    "marked-highlight": "^2.2.1"
+  },
+  "keywords": [
+    "cli",
+    "gui",
+    "mcp",
+    "dialog",
+    "stdio"
+  ],
+  "author": "Ivan Mezentsev",
+  "license": "MIT",
+  "homepage": "https://github.com/ivan-mezentsev/mcp-interactive",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ivan-mezentsev/mcp-interactive.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ivan-mezentsev/mcp-interactive/issues"
+  }
+}

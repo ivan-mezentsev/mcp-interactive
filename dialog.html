@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MCP Interactive Dialog</title>
+    <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --input-bg-color: #fff;
+            --input-border-color: #ddd;
+            --button-bg-color: #007acc;
+            --button-text-color: white;
+            --button-hover-bg-color: #005a9e;
+            --button-active-bg-color: #004080;
+            --cancel-button-bg-color: #6c757d;
+            --cancel-button-hover-bg-color: #5a6268;
+            --cancel-button-active-bg-color: #495057;
+            --markdown-h-color: #2c3e50;
+            --markdown-code-bg: #f4f4f4;
+            --markdown-pre-bg: #f8f8f8;
+            --markdown-pre-border: #ddd;
+            --markdown-blockquote-border: #007acc;
+            --markdown-blockquote-color: #666;
+            --scrollbar-thumb-color: #ccc;
+            --scrollbar-track-color: #f0f0f0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #2d2d2d;
+                --text-color: #e0e0e0;
+                --input-bg-color: #3c3c3c;
+                --input-border-color: #555;
+                --button-bg-color: #007acc; /* Keep button color for visibility */
+                --button-text-color: white;
+                --button-hover-bg-color: #005a9e;
+                --button-active-bg-color: #004080;
+                --cancel-button-bg-color: #5a6268;
+                --cancel-button-hover-bg-color: #495057;
+                --cancel-button-active-bg-color: #3c3e42;
+                --markdown-h-color: #c0c0c0;
+                --markdown-code-bg: #3c3c3c;
+                --markdown-pre-bg: #252525;
+                --markdown-pre-border: #444;
+                --markdown-blockquote-border: #007acc;
+                --markdown-blockquote-color: #aaa;
+                --scrollbar-thumb-color: #555;
+                --scrollbar-track-color: #2d2d2d;
+            }
+
+            .message code {
+                color: #e0e0e0; /* Ensure inline code text is visible in dark mode */
+            }
+
+            .message pre code {
+                color: #e0e0e0; /* Ensure pre code text is visible in dark mode */
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center the main column of content */
+            justify-content: flex-start;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+        
+        .message,
+        .options-container,
+        .text-input,
+        .button-container {
+            width: 100%;
+            max-width: 700px; /* Consistent max-width for all main blocks */
+            box-sizing: border-box; /* Ensure padding/border don't expand beyond max-width */
+            align-self: center; /* Ensure these blocks are centered within the body's flex context */
+        }
+
+        .message {
+            margin-bottom: 15px;
+            text-align: left;
+            font-size: 15px;
+            color: var(--text-color);
+            /* width: 100%; */ /* Removed as it's set above */
+            /* max-width: 700px; */ /* Removed as it's set above */
+            line-height: 1.6;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px); /* Adjust max-height based on other elements */
+            box-sizing: border-box;
+            padding-right: 10px;
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color); /* Firefox */
+        }
+
+        .message::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .message::-webkit-scrollbar-track {
+            background: var(--scrollbar-track-color);
+        }
+
+        .message::-webkit-scrollbar-thumb {
+            background-color: var(--scrollbar-thumb-color);
+            border-radius: 4px;
+            border: 2px solid var(--scrollbar-track-color);
+        }
+        
+        /* Markdown styling */
+        .message h1, .message h2, .message h3, .message h4, .message h5, .message h6 {
+            margin-top: 1.2em;
+            margin-bottom: 0.4em;
+            color: var(--markdown-h-color);
+        }
+        
+        .message h1 { font-size: 1.6em; }
+        .message h2 { font-size: 1.4em; }
+        .message h3 { font-size: 1.2em; }
+        
+        .message p {
+            margin-bottom: 0.8em;
+        }
+        
+        .message code {
+            background-color: var(--markdown-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            font-size: 0.85em;
+        }
+        
+        .message pre {
+            background-color: var(--markdown-pre-bg);
+            border: 1px solid var(--markdown-pre-border);
+            border-radius: 5px;
+            padding: 10px;
+            overflow-x: auto;
+            margin: 0.8em 0;
+            font-size: 0.85em;
+        }
+        
+        .message pre code {
+            background-color: transparent;
+            padding: 0;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            font-size: 1em; /* Reset to 1em as pre has its own font size */
+        }
+        
+        .message blockquote {
+            border-left: 4px solid var(--markdown-blockquote-border);
+            margin: 0.8em 0;
+            padding-left: 1em;
+            color: var(--markdown-blockquote-color);
+            font-style: italic;
+        }
+        
+        .message ul, .message ol {
+            margin: 0.8em 0;
+            padding-left: 1.5em;
+        }
+        
+        .message li {
+            margin-bottom: 0.4em;
+        }
+        
+        .message strong {
+            font-weight: bold;
+            color: var(--markdown-h-color); /* Use heading color for strong text */
+        }
+        
+        .message em {
+            font-style: italic;
+        }
+        
+        .message a {
+            color: var(--button-bg-color);
+            text-decoration: none;
+        }
+        
+        .message a:hover {
+            text-decoration: underline;
+        }
+        
+        .submit-button {
+            padding: 8px 20px;
+            font-size: 15px;
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-right: 8px;
+        }
+        
+        .submit-button:hover {
+            background-color: var(--button-hover-bg-color);
+        }
+        
+        .submit-button:active {
+            background-color: var(--button-active-bg-color);
+        }
+        
+        .cancel-button {
+            padding: 8px 20px;
+            font-size: 15px;
+            background-color: var(--cancel-button-bg-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .cancel-button:hover {
+            background-color: var(--cancel-button-hover-bg-color);
+        }
+        
+        .cancel-button:active {
+            background-color: var(--cancel-button-active-bg-color);
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center; /* Align buttons to the center */
+            align-items: center;
+            margin-top: 15px;
+            /* width: 100%; */ /* Removed as it's set above */
+            /* max-width: 700px; */ /* Removed as it's set above */
+        }
+        
+        .options-container {
+            margin: 15px 0;
+            text-align: left;
+            /* width: 100%; */ /* Removed as it's set above */
+            /* max-width: 700px; */ /* Removed as it's set above */
+            /* box-sizing: border-box; */ /* Removed as it's set above */
+        }
+        
+        .option-item {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option-item input[type="radio"] {
+            margin-right: 8px;
+            transform: scale(1.1);
+        }
+        
+        .option-item label {
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--text-color);
+        }
+        
+        .text-input {
+            /* width: 100%; */ /* Removed as it's set above */
+            /* max-width: 700px; */ /* Removed as it's set above */
+            padding: 8px;
+            font-size: 15px;
+            border: 1px solid var(--input-border-color);
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+            border-radius: 5px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            min-height: 60px;
+            resize: vertical;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: var(--button-bg-color);
+            box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.3);
+        }
+        
+        /* Progress bar styles */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--button-bg-color);
+            transition: width 1s linear;
+            position: relative;
+        }
+        
+        .progress-bar-text {
+            position: absolute;
+            right: 10px;
+            top: 6px;
+            font-size: 12px;
+            color: var(--text-color);
+            font-weight: bold;
+            background-color: var(--bg-color);
+            padding: 2px 6px;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progress-bar">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+        <div class="progress-bar-text" id="progress-bar-text"></div>
+    </div>
+    
+    <div class="message" id="dynamic-content">
+            <!-- Dynamic content will be inserted here -->
+        </div>
+        <div id="options-container">
+            <!-- Radio options will be inserted here -->
+        </div>
+        <textarea id="text-input" class="text-input" placeholder="Enter text here..."></textarea>
+    <div class="button-container">
+        <button class="submit-button" onclick="handleSubmitClick()">Submit</button>
+        <button class="cancel-button" onclick="handleCancelClick()">Cancel</button>
+    </div>
+    
+    <!-- Include marked.js for Markdown parsing -->
+    <!--<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>-->
+    <script src="marked.min.js"></script>
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        // Timer variables
+        let timeoutDuration = 60; // Default timeout in seconds
+        let remainingTime = 60;
+        let timerInterval = null;
+        
+        // Initialize and start the timeout timer
+        function startTimer(duration) {
+            timeoutDuration = duration;
+            remainingTime = duration;
+            
+            const progressBar = document.getElementById('progress-bar');
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressBarText = document.getElementById('progress-bar-text');
+            
+            // Show progress bar
+            progressBar.style.display = 'block';
+            
+            // Update progress bar immediately
+            updateProgressBar();
+            
+            // Start the timer
+            timerInterval = setInterval(() => {
+                remainingTime--;
+                updateProgressBar();
+                
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    // Send timeout event to main process
+                    ipcRenderer.send('dialog-timeout');
+                }
+            }, 1000);
+        }
+        
+        function updateProgressBar() {
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressBarText = document.getElementById('progress-bar-text');
+            
+            const percentage = (remainingTime / timeoutDuration) * 100;
+            progressBarFill.style.width = percentage + '%';
+            progressBarText.textContent = remainingTime + ' s';
+        }
+        
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        function handleSubmitClick() {
+            // Stop the timer
+            stopTimer();
+            
+            // Check if there are radio options
+            const selectedRadio = document.querySelector('input[name="predefined-option"]:checked');
+            let response = '';
+            
+            if (selectedRadio && selectedRadio.value !== 'Custom') {
+                // Use selected radio option (except Custom)
+                response = selectedRadio.value;
+            } else {
+                // Use text input (for Custom option or when no radio selected)
+                const textInput = document.getElementById('text-input');
+                response = textInput ? textInput.value : '';
+            }
+            
+            // Send message to main process with the response
+            ipcRenderer.send('submit-clicked', response);
+        }
+        
+        function handleCancelClick() {
+            // Stop the timer
+            stopTimer();
+            
+            // Send cancel message to main process
+            ipcRenderer.send('cancel-clicked');
+        }
+        
+        // // Handle keyboard events
+        // document.addEventListener('keydown', (event) => {
+        //     if (event.key === 'Enter') {
+        //         handleSubmitClick();
+        //     }
+        // });
+
+        // Function to render markdown content
+        function renderMarkdown(markdownText) {
+            try {
+                // Configure marked options for better security and formatting
+                marked.setOptions({
+                    breaks: true,
+                    gfm: true,
+                    // highlight: function(code, lang) { // Removed highlight.js integration
+                    //     const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                    //     try {
+                    //         return hljs.highlight(code, { language, ignoreIllegals: true }).value;
+                    //     } catch (e) {
+                    //         console.error('Highlight.js error:', e, 'for lang:', lang, 'code:', code);
+                    //         return hljs.highlight(code, { language: 'plaintext', ignoreIllegals: true }).value; // Fallback to plaintext
+                    //     }
+                    // },
+                    smartLists: true,
+                    smartypants: true
+                });
+                
+                const html = marked.parse(markdownText);
+                return html; // No need for tempDiv and manual highlighting calls
+            } catch (error) {
+                console.error('Error parsing markdown:', error);
+                // Fallback to plain text with line breaks
+                return markdownText.replace(/\n/g, '<br>');
+            }
+        }
+        
+        // Function to create radio options
+        function createRadioOptions(options) {
+            const container = document.getElementById('options-container');
+            container.innerHTML = ''; // Clear existing options
+            const textInput = document.getElementById('text-input');
+            
+            if (options && options.length > 0) {
+                // Add Custom option to the list
+                const allOptions = [...options, 'Custom'];
+                
+                allOptions.forEach((option, index) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option-item';
+                    
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = 'predefined-option';
+                    radio.value = option;
+                    radio.id = `option-${index}`;
+
+                    if (index === 0) { // Select the first predefined option by default
+                        radio.checked = true;
+                    }
+                    
+                    // Add event listener to show/hide text input
+                    radio.addEventListener('change', function() {
+                        if (this.value === 'Custom') {
+                            textInput.style.display = 'block';
+                            textInput.focus();
+                        } else {
+                            textInput.style.display = 'none';
+                        }
+                    });
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = `option-${index}`;
+                    label.textContent = option;
+                    
+                    optionDiv.appendChild(radio);
+                    optionDiv.appendChild(label);
+                    container.appendChild(optionDiv);
+                });
+                
+                // Initially hide text input when radio options are available
+                // and the first option (not 'Custom') is selected by default.
+                if (textInput) {
+                    if (allOptions[0] !== 'Custom') {
+                        textInput.style.display = 'none';
+                    } else {
+                        // If 'Custom' is the only option (after adding it), or if it happens to be the first actual predefined one
+                        // (which shouldn't happen if 'Custom' is always added at the end of actual options)
+                        // then ensure text input is visible.
+                        // This logic simplifies if we assume 'Custom' is always added last and there's at least one predefined option.
+                        // If the first *actual* predefined option is selected, hide input.
+                        // If 'Custom' ends up being selected by default (e.g. no predefined options, only 'Custom' added), show input.
+                        const firstRadio = container.querySelector('input[name="predefined-option"]');
+                        if (firstRadio && firstRadio.checked && firstRadio.value === 'Custom'){
+                            textInput.style.display = 'block';
+                        } else {
+                            textInput.style.display = 'none';
+                        }
+                    }
+                }
+            } else {
+                // Show text input when no radio options
+                if (textInput) {
+                    textInput.style.display = 'block';
+                }
+            }
+        }
+        
+        // Listen for new dialog data format
+        ipcRenderer.on('update-dialog', (event, dialogData) => {
+            const dynamicContentDiv = document.getElementById('dynamic-content');
+            if (dynamicContentDiv && dialogData.message) {
+                dynamicContentDiv.innerHTML = renderMarkdown(dialogData.message);
+            }
+            if (dialogData.projectName) { // Set title if provided in dialogData
+                document.title = dialogData.projectName;
+            }
+            
+            // Create radio options if provided
+            createRadioOptions(dialogData.predefinedOptions);
+            
+            // Start timer if timeout is provided
+            if (dialogData.timeout && dialogData.timeout > 0) {
+                startTimer(dialogData.timeout);
+            }
+        });
+        
+        // Listen for legacy dynamic content from the main process
+        ipcRenderer.on('update-content', (event, content) => {
+            const dynamicContentDiv = document.getElementById('dynamic-content');
+            if (dynamicContentDiv) {
+                dynamicContentDiv.innerHTML = renderMarkdown(content);
+            }
+
+            // Clear radio options for legacy format
+            createRadioOptions([]);
+        });
+    </script>
+</body>
+</html>
