@@ -3,6 +3,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { initialTools } from './initial_tools.js';
+import electronExecutablePath from 'electron';
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -29,17 +30,6 @@ const dialogTimeout = parseInt(values.timeout, 10) || 60;
 let electronProcess = null;
 let pendingRequests = new Map(); // Store pending ask_user requests
 
-// Function to find electron executable
-function findElectronPath() {
-  // First try npx electron (works when run via npx)
-  try {
-    return 'npx';
-  } catch (err) {
-    // Fallback to local installation
-    return path.join(__dirname, 'node_modules', '.bin', 'electron');
-  }
-}
-
 // Function to start Electron GUI with initial data
 function startElectronGUIWithData(projectName, message, predefinedOptions = []) {
   // Close existing process if any
@@ -48,7 +38,6 @@ function startElectronGUIWithData(projectName, message, predefinedOptions = []) 
     electronProcess = null;
   }
   
-  const electronCommand = findElectronPath();
   const mainPath = path.join(__dirname, 'electron-main.cjs');
   
   // Prepare dialog data as environment variables
@@ -60,20 +49,12 @@ function startElectronGUIWithData(projectName, message, predefinedOptions = []) 
     DIALOG_TIMEOUT: dialogTimeout.toString()
   };
   
-  // Handle npx vs direct electron execution
-  if (electronCommand === 'npx') {
-    electronProcess = spawn('npx', ['electron', mainPath], {
-      stdio: ['pipe', 'pipe', 'pipe'],
-      detached: false,
-      env: env
-    });
-  } else {
-    electronProcess = spawn(electronCommand, [mainPath], {
-      stdio: ['pipe', 'pipe', 'pipe'],
-      detached: false,
-      env: env
-    });
-  }
+  // Spawn Electron directly using the imported path
+  electronProcess = spawn(electronExecutablePath, [mainPath], {
+    stdio: ['pipe', 'pipe', 'pipe'],
+    detached: false,
+    env: env
+  });
   
   electronProcess.stdout.on('data', (data) => {
     const message = data.toString().trim();

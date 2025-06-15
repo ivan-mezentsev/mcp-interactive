@@ -1,6 +1,6 @@
 {
   "name": "mcp-interactive",
-  "version": "0.0.3",
+  "version": "0.0.7",
   "description": "MCP Interactive server for LLM --> user communication",
   "main": "index.js",
   "type": "module",
@@ -18,7 +18,8 @@
     "electron-main.cjs",
     "dialog.html",
     "marked.min.js",
-    "README.md"
+    "README.md",
+    "assets/icon.png"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

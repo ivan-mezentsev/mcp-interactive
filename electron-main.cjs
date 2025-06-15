@@ -24,7 +24,8 @@ function createDialog(dialogData = null) {
     },
     title: title,
     alwaysOnTop: true,
-    skipTaskbar: true
+    skipTaskbar: true,
+    icon: path.join(__dirname, 'assets/icon.png')
   });
 
   // Load the HTML content for the dialog
@@ -124,6 +125,12 @@ app.whenReady().then(() => {
   
   // Create and show the dialog
   createDialog(dialogData);
+
+  // Set the dock icon for macOS
+  if (process.platform === 'darwin') {
+    const image = path.join(__dirname, 'assets/icon.png');
+    app.dock.setIcon(image);
+  }
 });
 
 // Handle all windows closed
