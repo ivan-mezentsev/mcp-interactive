@@ -46,7 +46,16 @@ function startElectronGUIWithData(projectName, message, predefinedOptions = []) 
     DIALOG_PROJECT_NAME: projectName,
     DIALOG_MESSAGE: message,
     DIALOG_PREDEFINED_OPTIONS: JSON.stringify(predefinedOptions),
-    DIALOG_TIMEOUT: dialogTimeout.toString()
+    DIALOG_TIMEOUT: dialogTimeout.toString(),
+    // Remove IDE environment variables
+    VSCODE_PID: undefined,
+    VSCODE_CWD: undefined,
+    CURSOR_PID: undefined,
+    CURSOR_CWD: undefined,
+    // Add variables for independent startup
+    ELECTRON_IS_DEV: '0',
+    NODE_ENV: 'production',
+    ELECTRON_RUN_AS_NODE: ''
   };
   
   // Spawn Electron directly using the imported path

@@ -19,7 +19,7 @@ For a detailed history of changes, see the [Changelog](CHANGELOG.md).
 - **Tested and Confirmed:**
   - Trae IDE
   - Claude for Mac
-- **Currently Not Supported (due to module import limitations within the Electron framework):**
+  - augment code
   - Cursor IDE
   - VSCode with Copilot
 
@@ -119,15 +119,10 @@ This section outlines recommended guidelines for system prompts or rules for LLM
 ### Common Issues
 
 **Electron not starting:**
-- Ensure Node.js version 16+ is installed
-- Try reinstalling dependencies: `npm install`
-- Check if Electron is properly installed: `npx electron --version`
+- Ensure the current version of Node.js is installed
+- Try reinstalling dependencies by running: `npm install`
 
-**Module import errors in some IDEs:**
-- This is a known limitation with Cursor IDE and VSCode with Copilot
-- Use Trae IDE or Claude for Mac for full compatibility
-
-**Timeout issues:**
+**Timeout issues for answer (progressbar):**
 - Increase timeout value using `-t` parameter
 - Default timeout is 60 seconds, adjust as needed
 

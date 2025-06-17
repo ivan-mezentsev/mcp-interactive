@@ -1,5 +1,8 @@
 ## Changelog
 
+### 0.0.8 - 2025-06-17
+- Fixed issues with Cursor and VSCode
+
 ### 0.0.7 - 2025-06-16
 - Fixed electronExecutablePath detection.
 - Added icon for macOS.
