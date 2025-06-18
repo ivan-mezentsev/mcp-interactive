@@ -1,6 +1,6 @@
 # MCP Interactive
 
-[![npm version](https://badge.fury.io/js/mcp-interactive.svg)](https://badge.fury.io/js/mcp-interactive)
+[![npm version](https://img.shields.io/npm/v/mcp-interactive)](https://www.npmjs.com/package/mcp-interactive) [![npm downloads](https://img.shields.io/npm/dm/mcp-interactive)](https://www.npmjs.com/package/mcp-interactive)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub issues](https://img.shields.io/github/issues/ivan-mezentsev/mcp-interactive.svg)](https://github.com/ivan-mezentsev/mcp-interactive/issues)
 
