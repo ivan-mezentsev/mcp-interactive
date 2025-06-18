@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.0.9 - 2025-06-18
+- Removed timer background
+- Fixed npm badges
+
 ### 0.0.8 - 2025-06-17
 - Fixed issues with Cursor and VSCode
 
