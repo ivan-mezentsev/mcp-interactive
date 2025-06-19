@@ -1,6 +1,6 @@
 {
   "name": "mcp-interactive",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "MCP Interactive server for LLM --> user communication",
   "main": "index.js",
   "type": "module",
