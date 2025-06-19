@@ -67,7 +67,7 @@ npm install
 ```json
 {
   "mcpServers": {
-    "interactive-node": {
+    "mcp-interactive": {
       "command": "node",
       "args": [
         "/path/to/project/mcp-interactive/index.js",
@@ -84,7 +84,7 @@ npm install
 ```json
 {
   "mcpServers": {
-    "interactive": {
+    "mcp-interactive": {
       "command": "npx",
       "args": [
         "mcp-interactive",
@@ -95,7 +95,6 @@ npm install
   }
 }
 ```
-
 ## System Prompt Recommendations
 
 This section outlines recommended guidelines for system prompts or rules for LLMs to ensure optimal interaction and task execution.
@@ -107,6 +106,17 @@ This section outlines recommended guidelines for system prompts or rules for LLM
 
 ## Code Development
 - **Final confirmation**: MUST ask user if all requirements from specification are completed using `ask_user` tool via MCP with work report
+```
+
+## System Prompt Recommendations for ***Cursor IDE***
+
+```Markdown
+## Decision Making
+- **Ambiguous tasks**: ALWAYS clarify using `mcp_mcp-interactive_ask_user` tool via MCP
+- **Requires decisions**: ALWAYS clarify using `mcp_mcp-interactive_ask_user` tool via MCP
+
+## Code Development
+- **Final confirmation**: MUST ask user if all requirements from specification are completed using `mcp_mcp-interactive_ask_user` tool via MCP with work report
 ```
 
 ## Command Line Options

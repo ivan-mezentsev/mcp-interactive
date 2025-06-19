@@ -1,6 +1,6 @@
 {
   "name": "mcp-interactive",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP Interactive server for LLM --> user communication",
   "main": "index.js",
   "type": "module",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "node index.js",
+    "test": "node test_interactive.js",
     "prepublishOnly": "npm test"
   },
   "files": [
@@ -19,7 +19,8 @@
     "dialog.html",
     "marked.min.js",
     "README.md",
-    "assets/icon.png"
+    "assets/icon.png",
+    "test_interactive.js"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

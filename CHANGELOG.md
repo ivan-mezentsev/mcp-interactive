@@ -1,5 +1,10 @@
 ## Changelog
 
+### 0.1.1 - 2025-06-19
+- Added "test interactive"
+- Added prompt for Cursor IDE in recommendations
+- Added ability to minimize dialog window to dock
+
 ### 0.1.0 - 2025-06-19
 - Added pause-play-button element to the dialog window
 

@@ -16,7 +16,7 @@ function createDialog(dialogData = null) {
     width: 600,
     height: 600,
     resizable: true,
-    minimizable: false,
+    minimizable: true,
     maximizable: false,
     webPreferences: {
       nodeIntegration: true,
