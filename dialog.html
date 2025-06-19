@@ -313,6 +313,21 @@
             border-radius: 3px;
             box-shadow: none;
         }
+        
+        .pause-play-button {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+            outline: none;
+        }
+        
+        .pause-play-button:hover {
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -344,6 +359,7 @@
         let timeoutDuration = 60; // Default timeout in seconds
         let remainingTime = 60;
         let timerInterval = null;
+        let isPaused = false;
         
         // Initialize and start the timeout timer
         function startTimer(duration) {
@@ -379,13 +395,46 @@
             
             const percentage = (remainingTime / timeoutDuration) * 100;
             progressBarFill.style.width = percentage + '%';
-            progressBarText.textContent = remainingTime + ' s';
+            progressBarText.innerHTML = '<button class="pause-play-button" onclick="togglePause()" id="pause-play-btn">⏸</button> ' + remainingTime + ' s';
         }
         
         function stopTimer() {
             if (timerInterval) {
                 clearInterval(timerInterval);
                 timerInterval = null;
+            }
+            isPaused = false;
+        }
+        
+        function togglePause() {
+            const pausePlayBtn = document.getElementById('pause-play-btn');
+            
+            if (isPaused) {
+                // Resume timer
+                isPaused = false;
+                pausePlayBtn.textContent = '⏸';
+                
+                // Restart the timer interval
+                timerInterval = setInterval(() => {
+                    remainingTime--;
+                    updateProgressBar();
+                    
+                    if (remainingTime <= 0) {
+                        clearInterval(timerInterval);
+                        // Send timeout event to main process
+                        ipcRenderer.send('dialog-timeout');
+                    }
+                }, 1000);
+            } else {
+                // Pause timer
+                isPaused = true;
+                pausePlayBtn.textContent = '⏵';
+                
+                // Stop the timer interval
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
             }
         }
         

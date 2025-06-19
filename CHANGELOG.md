@@ -1,5 +1,8 @@
 ## Changelog
 
+### 0.1.0 - 2025-06-19
+- Added pause-play-button element to the dialog window
+
 ### 0.0.9 - 2025-06-18
 - Removed timer background
 - Fixed npm badges
