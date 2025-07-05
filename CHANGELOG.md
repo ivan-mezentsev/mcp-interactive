@@ -1,5 +1,8 @@
 ## Changelog
 
+### 0.1.2 - 2025-07-05
+- Update text input placeholder and enhance keyboard shortcuts for submission
+
 ### 0.1.1 - 2025-06-19
 - Added "test interactive"
 - Added prompt for Cursor IDE in recommendations

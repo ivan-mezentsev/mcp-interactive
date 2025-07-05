@@ -343,7 +343,7 @@
         <div id="options-container">
             <!-- Radio options will be inserted here -->
         </div>
-        <textarea id="text-input" class="text-input" placeholder="Enter text here..."></textarea>
+        <textarea id="text-input" class="text-input"></textarea>
     <div class="button-container">
         <button class="submit-button" onclick="handleSubmitClick()">Submit</button>
         <button class="cancel-button" onclick="handleCancelClick()">Cancel</button>
@@ -467,12 +467,13 @@
             ipcRenderer.send('cancel-clicked');
         }
         
-        // // Handle keyboard events
-        // document.addEventListener('keydown', (event) => {
-        //     if (event.key === 'Enter') {
-        //         handleSubmitClick();
-        //     }
-        // });
+        // Handle keyboard events
+        document.addEventListener('keydown', (event) => {
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+                handleSubmitClick();
+            }
+        });
 
         // Function to render markdown content
         function renderMarkdown(markdownText) {
@@ -574,6 +575,16 @@
             }
         }
         
+        document.addEventListener('DOMContentLoaded', () => {
+            const textInput = document.getElementById('text-input');
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            if (isMac) {
+                textInput.placeholder = "Answer... Cmd+Enter to submit";
+            } else {
+                textInput.placeholder = "Answer... Ctrl+Enter to submit";
+            }
+        });
+
         // Listen for new dialog data format
         ipcRenderer.on('update-dialog', (event, dialogData) => {
             const dynamicContentDiv = document.getElementById('dynamic-content');
