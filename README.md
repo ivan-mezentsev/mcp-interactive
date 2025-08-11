@@ -7,11 +7,13 @@
 An interactive MCP (Model Context Protocol) server with an Electron interface for user interaction.
 
 ## Key Features
+
 This MCP server enhances LLM coordination, offering greater control and predictability, and significantly reduces billable requests by minimizing user interactions within a single task.
 
 For a detailed history of changes, see the [Changelog](CHANGELOG.md).
 
 ## Demo
+
 ![Demo](docs/mcp-interactive.gif)
 
 ## Compatibility
@@ -24,9 +26,11 @@ For a detailed history of changes, see the [Changelog](CHANGELOG.md).
   - VSCode with Copilot
 
 ## Available Tools
+
 `ask_user` - Prompts the user with a question via a pop-up command prompt and awaits their interactive response.
 
 **Input Schema:**
+
 ```json
 {
   "type": "object",
@@ -56,18 +60,37 @@ For a detailed history of changes, see the [Changelog](CHANGELOG.md).
 
 ## Installation
 
+### Using npx
+
+```json
+{
+  "mcpServers": {
+    "interactive": {
+      "command": "npx",
+      "args": [
+        "mcp-interactive",
+        "-t",
+        "300"
+      ]
+    }
+  }
+}
+```
+
 ### Local Installation
 
-1. Install dependencies:
+Install dependencies:
+
 ```bash
 npm install
 ```
 
-2. Configure MCP server:
+Configure MCP server:
+
 ```json
 {
   "mcpServers": {
-    "mcp-interactive": {
+    "interactive": {
       "command": "node",
       "args": [
         "/path/to/project/mcp-interactive/index.js",
@@ -79,23 +102,30 @@ npm install
 }
 ```
 
-### Using npx
+## System Prompt Recommendations for ***Visual Studio Code***, ***Cursor IDE***
 
-```json
-{
-  "mcpServers": {
-    "mcp-interactive": {
-      "command": "npx",
-      "args": [
-        "mcp-interactive",
-        "-t",
-        "300"
-      ]
-    }
-  }
-}
+```Markdown
+## Decision Making
+- **Ambiguous tasks**: ALWAYS clarify using `mcp_interactive_ask_user` tool
+- **Requires decisions**: ALWAYS clarify using `mcp_interactive_ask_user` tool
+
+## Code Development
+- **Final confirmation**: MUST ask user if all requirements from specification are completed using `mcp_interactive_ask_user` tool with work report
+
+## Final gate
+- Before ANY final answer (after actions/edits/checks), it is **MANDATORY** to call `mcp_interactive_ask_user` with a report on the work done and the option ["Yes, everything is OK"].
+- If the answer is not "Yes, everything is OK" — continue working until the comments are resolved and repeat every time
+`mcp_interactive_ask_user`.
+- There are no exceptions (including minor edits).
 ```
-## System Prompt Recommendations
+
+### Example of "Human In The Loop" mode in chat of ***Visual Studio Code***
+
+```Markdown
+Can you check the docs and explain how the project works? #interactive
+```
+
+## System Prompt Recommendations for ***Trae IDE***
 
 This section outlines recommended guidelines for system prompts or rules for LLMs to ensure optimal interaction and task execution.
 
@@ -106,33 +136,29 @@ This section outlines recommended guidelines for system prompts or rules for LLM
 
 ## Code Development
 - **Final confirmation**: MUST ask user if all requirements from specification are completed using `ask_user` tool via MCP with work report
-```
 
-## System Prompt Recommendations for ***Cursor IDE***
-
-```Markdown
-## Decision Making
-- **Ambiguous tasks**: ALWAYS clarify using `mcp_mcp-interactive_ask_user` tool via MCP
-- **Requires decisions**: ALWAYS clarify using `mcp_mcp-interactive_ask_user` tool via MCP
-
-## Code Development
-- **Final confirmation**: MUST ask user if all requirements from specification are completed using `mcp_mcp-interactive_ask_user` tool via MCP with work report
+## Final gate
+- Before ANY final answer (after actions/edits/checks), it is **MANDATORY** to call `mcp_interactive_ask_user` with a report on the work done and the option ["Yes, everything is OK"].
+- If the answer is not "Yes, everything is OK" — continue working until the comments are resolved and repeat every time
+`mcp_interactive_ask_user`.
+- There are no exceptions (including minor edits).
 ```
 
 ## Command Line Options
 
 - `--timeout` or `-t` (seconds): Specifies the waiting time for the user's response dialog. If no response is received within this period, the reply "User did not reply: Timeout occurred." will be sent.
 
-
 ## Troubleshooting
 
 ### Common Issues
 
 **Electron not starting:**
+
 - Ensure the current version of Node.js is installed
 - Try reinstalling dependencies by running: `npm install`
 
 **Timeout issues for answer (progressbar):**
+
 - Increase timeout value using `-t` parameter
 - Default timeout is 60 seconds, adjust as needed
 
