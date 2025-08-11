@@ -1,5 +1,8 @@
 ## Changelog
 
+### 0.2.0 - 2025-07-10
+- feat(dialog): add copy icon and external link handling in dialog
+
 ### 0.1.2 - 2025-07-05
 - Update text input placeholder and enhance keyboard shortcuts for submission
 

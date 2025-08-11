@@ -30,6 +30,17 @@ function createDialog(dialogData = null) {
 
   // Load the HTML content for the dialog
   dialogWindow.loadFile('dialog.html');
+
+  // Defense-in-depth: block all internal navigations and new windows
+  try {
+    const wc = dialogWindow.webContents;
+    wc.setWindowOpenHandler(() => ({ action: 'deny' }));
+    wc.on('will-navigate', (event) => {
+      event.preventDefault();
+    });
+  } catch (err) {
+    // ignore
+  }
   
   // Send initial data when the page is ready
   if (dialogData) {

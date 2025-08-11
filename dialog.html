@@ -320,12 +320,64 @@
             color: var(--text-color);
             font-size: 12px;
             cursor: pointer;
-            padding: 0;
+            padding: 0; /* keep visual size small */
             margin: 0;
             outline: none;
+            position: relative; /* anchor for enlarged hit-area */
+            display: inline-flex; /* better centering */
+            align-items: center;
+            justify-content: center;
+            line-height: 1; /* avoid extra inline height */
+            user-select: none; /* prevent accidental text selection */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Enlarge clickable area without affecting layout */
+        .pause-play-button::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            bottom: -6px;
+            left: -6px;
+            /* transparent box expands the hit target by ~12px both axes */
         }
         
         .pause-play-button:hover {
+            opacity: 0.7;
+        }
+
+
+        .copy-button {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 0; /* keep visual size small */
+            margin: 0;
+            outline: none;
+            padding-right: 15px; /* spacing between buttons */
+            position: relative; /* anchor for enlarged hit-area */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Enlarge clickable area without affecting layout */
+        .copy-button::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            bottom: -6px;
+            left: -6px;
+        }
+        
+        .copy-button:hover {
             opacity: 0.7;
         }
     </style>
@@ -336,7 +388,6 @@
         <div class="progress-bar-fill" id="progress-bar-fill"></div>
         <div class="progress-bar-text" id="progress-bar-text"></div>
     </div>
-    
     <div class="message" id="dynamic-content">
             <!-- Dynamic content will be inserted here -->
         </div>
@@ -353,7 +404,7 @@
     <!--<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>-->
     <script src="marked.min.js"></script>
     <script>
-        const { ipcRenderer } = require('electron');
+    const { ipcRenderer, shell, clipboard } = require('electron');
         
         // Timer variables
         let timeoutDuration = 60; // Default timeout in seconds
@@ -395,7 +446,7 @@
             
             const percentage = (remainingTime / timeoutDuration) * 100;
             progressBarFill.style.width = percentage + '%';
-            progressBarText.innerHTML = '<button class="pause-play-button" onclick="togglePause()" id="pause-play-btn">⏸</button> ' + remainingTime + ' s';
+            progressBarText.innerHTML = '<button class="copy-button" id="copy-question-btn" aria-label="Copy question" title="Copy question" onclick="handleCopyQuestionClick()">⧉</button><button class="pause-play-button" onclick="togglePause()" id="pause-play-btn" aria-label="Pause timer" title="Pause/Play">⏸</button> ' + remainingTime + ' s';
         }
         
         function stopTimer() {
@@ -413,6 +464,7 @@
                 // Resume timer
                 isPaused = false;
                 pausePlayBtn.textContent = '⏸';
+                pausePlayBtn.setAttribute('aria-label', 'Pause timer');
                 
                 // Restart the timer interval
                 timerInterval = setInterval(() => {
@@ -429,6 +481,7 @@
                 // Pause timer
                 isPaused = true;
                 pausePlayBtn.textContent = '⏵';
+                pausePlayBtn.setAttribute('aria-label', 'Resume timer');
                 
                 // Stop the timer interval
                 if (timerInterval) {
@@ -475,7 +528,7 @@
             }
         });
 
-        // Function to render markdown content
+    // Function to render markdown content
         function renderMarkdown(markdownText) {
             try {
                 // Configure marked options for better security and formatting
@@ -501,6 +554,34 @@
                 console.error('Error parsing markdown:', error);
                 // Fallback to plain text with line breaks
                 return markdownText.replace(/\n/g, '<br>');
+            }
+        }
+
+        // Attach external link handler to a container: open ALL links externally
+        function attachExternalLinkHandler(rootEl) {
+            if (!rootEl) return;
+            // Remove previous handler if re-attaching
+            rootEl.removeEventListener('click', __externalLinkHandler, true);
+            rootEl.addEventListener('click', __externalLinkHandler, true);
+            // Optional: normalize anchor attributes for UX
+            const anchors = rootEl.querySelectorAll('a[href]');
+            anchors.forEach(a => {
+                a.setAttribute('target', '_blank');
+                a.setAttribute('rel', 'noopener noreferrer');
+            });
+        }
+
+        function __externalLinkHandler(e) {
+            const link = e.target && (e.target.closest ? e.target.closest('a[href]') : null);
+            if (!link) return;
+            const url = link.getAttribute('href');
+            if (!url) return;
+            // Always prevent in-app navigation and open externally
+            e.preventDefault();
+            try {
+                shell.openExternal(url);
+            } catch (_) {
+                // Intentionally ignore any errors
             }
         }
         
@@ -585,14 +666,32 @@
             }
         });
 
+        // Keep the latest raw message for copy action
+        let __latestRawMessage = '';
+
+        // Copy button click handler (used by inline onclick)
+        function handleCopyQuestionClick() {
+            try {
+                clipboard.writeText(__latestRawMessage || '');
+            } catch (_) {
+                // ignore silently
+            }
+        }
+
         // Listen for new dialog data format
         ipcRenderer.on('update-dialog', (event, dialogData) => {
             const dynamicContentDiv = document.getElementById('dynamic-content');
             if (dynamicContentDiv && dialogData.message) {
                 dynamicContentDiv.innerHTML = renderMarkdown(dialogData.message);
+                // Ensure links open externally
+                attachExternalLinkHandler(dynamicContentDiv);
             }
             if (dialogData.projectName) { // Set title if provided in dialogData
                 document.title = dialogData.projectName;
+            }
+            // Save raw message for clipboard copy
+            if (typeof dialogData.message === 'string') {
+                __latestRawMessage = dialogData.message;
             }
             
             // Create radio options if provided
@@ -609,11 +708,18 @@
             const dynamicContentDiv = document.getElementById('dynamic-content');
             if (dynamicContentDiv) {
                 dynamicContentDiv.innerHTML = renderMarkdown(content);
+                // Ensure links open externally (legacy path)
+                attachExternalLinkHandler(dynamicContentDiv);
+            }
+            if (typeof content === 'string') {
+                __latestRawMessage = content;
             }
 
             // Clear radio options for legacy format
             createRadioOptions([]);
         });
+
+    // Note: copy button is created dynamically in the timer area; it uses the inline onclick handler above.
     </script>
 </body>
 </html>
