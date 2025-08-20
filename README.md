@@ -114,8 +114,7 @@ Configure MCP server:
 
 ## Final gate
 - Before ANY final answer (after actions/edits/checks), it is **MANDATORY** to call `mcp_interactive_ask_user` with a report on the work done and the option ["Yes, everything is OK"].
-- If the answer is not "Yes, everything is OK" — continue working until the comments are resolved and repeat every time
-`mcp_interactive_ask_user`.
+- If the answer is not "Yes, everything is OK" — continue working until the comments are resolved and repeat every time `mcp_interactive_ask_user`.
 - There are no exceptions (including minor edits).
 ```
 
@@ -138,9 +137,8 @@ This section outlines recommended guidelines for system prompts or rules for LLM
 - **Final confirmation**: MUST ask user if all requirements from specification are completed using `ask_user` tool via MCP with work report
 
 ## Final gate
-- Before ANY final answer (after actions/edits/checks), it is **MANDATORY** to call `mcp_interactive_ask_user` with a report on the work done and the option ["Yes, everything is OK"].
-- If the answer is not "Yes, everything is OK" — continue working until the comments are resolved and repeat every time
-`mcp_interactive_ask_user`.
+- Before ANY final answer (after actions/edits/checks), it is **MANDATORY** to call `ask_user` with a report on the work done and the option ["Yes, everything is OK"].
+- If the answer is not "Yes, everything is OK" — continue working until the comments are resolved and repeat every time `ask_user`.
 - There are no exceptions (including minor edits).
 ```
 
