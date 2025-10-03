@@ -1,6 +1,6 @@
 {
   "name": "mcp-interactive",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "MCP Interactive server for LLM to user communication",
   "main": "index.js",
   "type": "module",
@@ -24,11 +24,11 @@
     "test_interactive.js"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "electron": "^27.3.11",
+    "@modelcontextprotocol/sdk": "1.19.1",
+    "electron": "38.2.0",
     "highlight.js": "^11.11.1",
-    "marked": "^15.0.12",
-    "marked-highlight": "^2.2.1"
+    "marked": "16.3.0",
+    "marked-highlight": "2.2.2"
   },
   "keywords": [
     "interactive",
